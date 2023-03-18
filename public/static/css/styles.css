@@ -1,0 +1,88 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    width: 90%;
+    max-width: 500px;
+    margin: 0 auto;
+    /* border: 1px solid grey; */
+}
+
+.todo-form {
+    display: flex;
+    gap: 0 5px;
+    margin: 24px 0;
+}
+
+.todo-form>input {
+    flex: 1;
+    padding: 8px 16px;
+}
+
+.todo-form>button {
+    min-width: 80px;
+    cursor: pointer;
+}
+
+.todo-info-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 48px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #666;
+    gap: 0 10px;
+}
+
+.todo-info {
+    display: flex;
+    align-items: center;
+    gap: 0 5px;
+}
+
+.todo-info p {
+    font-size: 14px;
+}
+
+.todo-info p:first-of-type {
+    color: #333;
+}
+
+.todo-info p:last-of-type {
+    background-color: rgb(224, 224, 224);
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 16px;
+}
+
+.not-found {
+    width: max-content;
+    margin: 0 auto;
+    padding-top: 96px;
+    display: none;
+}
+
+.not-found.active {
+    display: block;
+}
+
+.not-found p {
+    text-align: center;
+}
+
+.not-found p:first-of-type {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.not-found p:last-of-type {
+    font-size: 0.95rem;
+    color: #666;
+    margin-top: 6px;
+}
