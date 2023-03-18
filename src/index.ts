@@ -1,5 +1,6 @@
 const todoForm = document.querySelector('[data-todo-form]') as HTMLFormElement;
 const todoInput = document.querySelector('[data-todo-input]') as HTMLInputElement;
+const todoFormBtn = document.querySelector('[data-todo-form-button]') as HTMLButtonElement;
 const totalTodosEl = document.querySelector('[data-total-todos]') as HTMLParagraphElement;
 const completedTodosEl = document.querySelector('[data-completed-todos]') as HTMLParagraphElement;
 const notFoundContainer = document.querySelector('.not-found') as HTMLDivElement;
@@ -15,6 +16,9 @@ type Todo = {
 
 class TodoList {
     todos: Todo[];
+    editMode: boolean;
+    editIds: string[];
+    editId: string | null;
 
     constructor() {
         const typedTodos: string | null = localStorage.getItem('typed-todos');
@@ -26,6 +30,9 @@ class TodoList {
             this.updateTodoHeader();
             this.renderAllTodos();
         }
+        this.editMode = false;
+        this.editIds = [];
+        this.editId = null;
     }
 
     // Add a new todo
@@ -69,6 +76,8 @@ class TodoList {
         btnContainer.appendChild(delBtnEl);
 
         completeBtnEl.addEventListener('click', () => this.handleCompleted(todo, todoEl));
+        editBtnEl.addEventListener('click', () => this.handleEdit(todo));
+        delBtnEl.addEventListener('click', () => this.handleDelete(todo.id));
 
         todoEl.appendChild(todoTitleEl);
         todoEl.appendChild(btnContainer);
@@ -88,6 +97,7 @@ class TodoList {
     // Render all Todos
     renderAllTodos() {
         notFoundContainer?.classList.remove('active');
+        todosContainer.innerHTML = '';
         this.todos.forEach(todo => {
             const todoEl = this.createTodoElement(todo);
             if (todo.completed) todoEl.classList.add('completed')
@@ -126,6 +136,55 @@ class TodoList {
         localStorage.setItem('typed-todos', JSON.stringify(this.todos));
         this.updateTodoHeader();
     }
+
+    // handle editing of Todo
+    handleEdit(myTodo: Todo) {
+        if (this.editIds.length === 0 || !this.editIds.includes(myTodo.id)) {
+            this.editMode = true;
+            this.editIds.push(myTodo.id);
+            this.editId = myTodo.id;
+            todoInput.value = myTodo.title;
+            todoInput.placeholder = 'Edit Your Todo ...';
+            todoFormBtn.innerText = 'Edit';
+        } else { // Undo Edit
+            this.editMode = false;
+            this.editIds = this.editIds.filter(editId => editId !== myTodo.id);
+            this.editId = null;
+            todoInput.value = '';
+            todoInput.placeholder = 'Add Your Todo ...';
+            todoFormBtn.innerText = 'Add';
+        }
+    }
+
+    // Update Todo
+    updateTodo(updatedTitle: string) {
+        this.todos = this.todos.map(todo => {
+            if (todo.id === this.editId) {
+                return {
+                    ...todo,
+                    title: updatedTitle
+                }
+            } else {
+                return todo;
+            }
+        })
+        this.renderAllTodos();
+        todoInput.value = '';
+        todoInput.placeholder = 'Add Your Todo ...';
+        todoFormBtn.innerText = 'Add';
+        this.editMode = false;
+        this.editIds = [];
+        this.editId = null;
+        localStorage.setItem('typed-todos', JSON.stringify(this.todos));
+    }
+
+    //Delete Todo
+    handleDelete(todoId: string) {
+        this.todos = this.todos.filter(todo => todo.id !== todoId);
+        localStorage.setItem('typed-todos', JSON.stringify(this.todos));
+        this.renderAllTodos();
+        this.updateTodoHeader();
+    }
 }
 
 const todolist = new TodoList();
@@ -134,5 +193,7 @@ todoForm?.addEventListener('submit', (e: SubmitEvent) => {
     e.preventDefault();
     const todoTitle: string = todoInput.value;
     if (todoTitle.trim() === '') return;
-    todolist.addNewTodo(todoTitle);
+    if (!todolist.editMode)
+        todolist.addNewTodo(todoTitle);
+    else todolist.updateTodo(todoTitle);
 })

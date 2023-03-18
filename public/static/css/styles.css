@@ -98,10 +98,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0 16px;
+}
+
+.todo p {
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .todo.completed p {
     text-decoration: line-through;
+
 }
 
 .todo-btn-container {
