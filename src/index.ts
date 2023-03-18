@@ -18,7 +18,9 @@ class TodoList {
 
     constructor() {
         const typedTodos: string | null = localStorage.getItem('typed-todos');
+        // No Todos in localStorage
         if (typedTodos === null) this.todos = [];
+        // Render todos present in localStorage
         else {
             this.todos = JSON.parse(typedTodos);
             this.updateTodoHeader();
@@ -66,6 +68,8 @@ class TodoList {
         btnContainer.appendChild(editBtnEl);
         btnContainer.appendChild(delBtnEl);
 
+        completeBtnEl.addEventListener('click', () => this.handleCompleted(todo, todoEl));
+
         todoEl.appendChild(todoTitleEl);
         todoEl.appendChild(btnContainer);
 
@@ -86,6 +90,7 @@ class TodoList {
         notFoundContainer?.classList.remove('active');
         this.todos.forEach(todo => {
             const todoEl = this.createTodoElement(todo);
+            if (todo.completed) todoEl.classList.add('completed')
             todosContainer.appendChild(todoEl);
         })
     }
@@ -98,6 +103,28 @@ class TodoList {
             if (todo.completed) completed++;
         })
         completedTodosEl.innerText = completed.toString();
+    }
+
+    // Handle Complete state of todo
+    handleCompleted(myTodo: Todo, todoEl: HTMLDivElement) {
+        this.todos = this.todos.map((todo) => {
+            if (todo.id === myTodo.id) {
+                if (todo.completed) {
+                    todoEl.classList.remove('completed')
+                } else {
+                    todoEl.classList.add('completed')
+                }
+                return {
+                    ...todo,
+                    completed: !todo.completed
+                }
+
+            } else {
+                return todo
+            }
+        })
+        localStorage.setItem('typed-todos', JSON.stringify(this.todos));
+        this.updateTodoHeader();
     }
 }
 
