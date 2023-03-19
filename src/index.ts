@@ -96,8 +96,12 @@ class TodoList {
 
     // Render all Todos
     renderAllTodos() {
-        notFoundContainer?.classList.remove('active');
         todosContainer.innerHTML = '';
+        if (this.todos.length === 0) {
+            notFoundContainer?.classList.add('active');
+            return;
+        }
+        notFoundContainer?.classList.remove('active');
         this.todos.forEach(todo => {
             const todoEl = this.createTodoElement(todo);
             if (todo.completed) todoEl.classList.add('completed')
@@ -181,7 +185,11 @@ class TodoList {
     //Delete Todo
     handleDelete(todoId: string) {
         this.todos = this.todos.filter(todo => todo.id !== todoId);
-        localStorage.setItem('typed-todos', JSON.stringify(this.todos));
+        if (this.todos.length === 0) {
+            localStorage.removeItem('typed-todos');
+        } else {
+            localStorage.setItem('typed-todos', JSON.stringify(this.todos));
+        }
         this.renderAllTodos();
         this.updateTodoHeader();
     }
